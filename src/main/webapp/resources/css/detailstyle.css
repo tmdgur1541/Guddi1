@@ -1,0 +1,287 @@
+@charset "UTF-8";
+
+/**********************************************************
+	CSS RESET
+***********************************************************/
+body, h1, h2, h3, h4, h5, dl, dt, dd, ul, li, ol, th, td, p, form, fieldset, legend, button, section {
+	margin: 0;
+	padding: 0;
+	font-weight: normal;
+	box-sizing: border-box;
+}
+dl, ul, ol, li {
+	list-style: none outside none;
+}
+
+button {
+    cursor: pointer;
+}
+
+/**********************************************************
+	상품상세 - 상품정보
+***********************************************************/
+.prd_info {
+    display: flex;
+    padding: 100px 0;
+}
+.prd_info .photo {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    width: 50%;
+}
+.prd_info .photo li {
+    width: 49%;
+    height: 269px;
+    border: 1px solid #333;
+}
+.prd_info .photo li:nth-child(3),
+.prd_info .photo li:nth-child(4) {
+    margin-top: 10px;
+}
+.prd_info .photo li img {
+   height: 100%;
+  
+}
+.prd_info .info {
+    width: 50%;
+    padding: 0 50px;
+}
+
+/* 상품명 */
+.prd_info .info .brand_name {
+    margin: 5px 0 40px;
+    font-size: 30px;
+    color: #000;
+}
+
+.brand_info li {
+    padding: 20px 0;
+    border-top: 1px solid #aaa;
+}
+.brand_info li .tit {
+    display: inline-block;
+    width: 78px;
+}
+
+/* 가격 */
+.prd_info .info .price .num {
+    display: inline-block;
+    padding-right: 2px;
+    font-size: 22px;
+    color: #000;
+}
+
+
+/* 마이너스 버튼 */
+.btn_area .btn-minus {
+    display: inline-block;
+    width: 33px;
+    height: 33px;
+    color: #000;
+    font-size: 24px;
+    text-align: center;
+    line-height: 31px;
+    background-color: #fff;
+    border: 1px solid #000;
+    vertical-align: middle;
+    cursor: pointer;
+}
+
+/* 수량 입력 */
+.btn_area .product-quantity {
+    width: 80px;
+    margin: 0 5px;
+    vertical-align: middle;
+}
+
+/* 플러스 버튼 */
+.btn_area .btn-plus {
+    display: inline-block;
+    width: 33px;
+    height: 33px;
+    color: #000;
+    font-size: 24px;
+    text-align: center;
+    line-height: 31px;
+    background-color: #fff;
+    border: 1px solid #000;
+    vertical-align: middle;
+    cursor: pointer;
+}
+
+/* 장바구니 버튼 */
+.prd_info .info .cart-btn {
+    display: inline-block;
+    width: 100%;
+    color: #fff;
+    font-size: 18px;
+    line-height: 55px;
+    text-align: center;
+    background-color: #333;
+    border: 0;
+    cursor: pointer;
+}
+
+
+/**********************************************************
+	상품상세 - 리뷰
+***********************************************************/
+.review_wrap {
+    padding: 50px 0;
+}
+.review_wrap .title {
+    margin-bottom: 15px;
+    font-size: 26px;
+    color: #000;
+}
+.review_wrap .reviewupdateForm {
+    padding: 12px 0;
+    border-top: 1px solid #aaa;
+    border-bottom: 1px solid #aaa;
+}
+.review_wrap .reviewupdateForm li {
+    padding: 6px 0;
+}
+.review_wrap .reviewupdateForm li .tit {
+    font-size: 14px;
+    color: #000;
+}
+.review_wrap .reviewupdateForm li .reviewsubject {
+    width: calc(100% - 185px);
+}
+.review_wrap .reviewupdateForm li .reviewcontent {
+    width: calc(100% - 185px);
+    height: 120px;
+    vertical-align: top;
+}
+/* 리뷰 등록 버튼 */
+.review_wrap .reviewupdateForm li.con {
+    position: relative;
+}
+.review_wrap .reviewupdateForm li.con .reviewupdate {
+    display: block;
+    position: absolute;
+    right: 0;
+    top: 6px;
+    width: 120px;
+    height: 120px;
+    color: #fff;
+    font-size: 16px;
+    line-height: 120px;
+    text-align: center;
+    background-color: #333;
+    border: 0;
+    cursor: pointer;
+}
+
+/* 리뷰 리스트 */
+.review_list {
+    border-top: 1px solid #aaa;
+}
+.review_list li {
+    padding: 15px 0;
+    font-size: 14px;
+    border-bottom: 1px solid #aaa;
+    cursor: pointer;
+}
+.review_list li .subject {
+    position: relative;
+    color: #000;
+}
+.review_list li .subject .date {
+    position: absolute;
+    right: 0;
+    top: -10px;
+    color: #aaa;
+    line-height: 44px;
+}
+.review_list li .con {
+    display: none;
+    margin-top: 20px;
+    color: #000;
+    line-height: 18px;
+}
+.review_list li .con .writer {
+    margin-top: 15px;
+    color: #999;
+}
+
+
+
+
+/**********************************************************
+	PAGING
+***********************************************************/
+.paging {
+	margin-top: 20px;
+	text-align: center;
+	cursor: default;
+}
+.paging li {
+	display: inline-block;
+	margin: 0 3px;
+	padding: 1.5px 8.5px 2.5px 8.5px;
+	font-size: 14px;
+	color: #888;
+	cursor: pointer;
+}
+.paging li span {
+	display: inline-block;
+	font-size: 14px;
+	line-height: 16px;
+}
+.paging li.num:hover span {
+	color: #000;
+	border-bottom: 1px solid #000;
+}
+.paging li.now {
+	content: "";
+	display: inline-block;
+	color: #fff;
+	background-color: #000;
+	border-radius: 3px;
+}
+.paging li.disabled {
+	cursor: default !important;
+}
+.paging li.first span {
+	width: 16px;
+	height: 16px;
+	background-position: -67px -115px;
+}
+.paging li.first.disabled span {
+	width: 16px;
+	height: 16px;
+	background-position: -17px -115px;
+}
+.paging li.prev span {
+	width: 16px;
+	height: 16px;
+	background-position: -167px -115px;
+}
+.paging li.prev.disabled span {
+	width: 16px;
+	height: 16px;
+	background-position: -117px -115px;
+}
+.paging li.next span {
+	width: 16px;
+	height: 16px;
+	background-position: -267px -115px;
+}
+.paging li.next.disabled span {
+	width: 16px;
+	height: 16px;
+	background-position: -217px -115px;
+}
+.paging li.last span {
+	width: 16px;
+	height: 16px;
+	background-position: -367px -115px;
+}
+.paging li.last.disabled span {
+	width: 16px;
+	height: 16px;
+	background-position: -317px -115px;
+}

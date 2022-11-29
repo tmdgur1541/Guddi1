@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd"
+>
+
+
+<mapper namespace="com.guddi.shop.dao.EtcDao">
+
+	
+	<select id="getNewFlgInfo" resultType="com.guddi.shop.dto.EtcDto">
+		select idx, use_flg, regdate, newname from newflg;
+	</select>
+	
+	<select id="getUseFlgInfo" resultType="com.guddi.shop.dto.EtcDto">
+		select idx, regdate, useFlg_name from useFlg;
+	</select>
+		
+	<select id="getNewFlgIdx" resultType="int">
+		select idx from newFlg
+		order by idx desc limit 1;
+	</select>
+	
+	<insert id="doRegistNewFlg">
+		insert into newflg (idx, newname, use_flg) values (#{param1},#{param2},1)
+	</insert>
+	
+	<update id="doUpateUseFlg">
+		update newflg set use_flg=#{param1} where idx = #{param2}
+	</update>
+
+	<select id="getSellFlgInfo" resultType="com.guddi.shop.dto.EtcDto">
+		select idx, use_flg, regdate, sellname from sellflg;
+	</select>
+	
+	<select id="getSellFlgIdx" resultType="int">
+		select idx from sellflg
+		order by idx desc limit 1;
+	</select>
+	
+	<insert id="doRegistSellFlg">
+		insert into sellflg (idx, sellname, use_flg) values (#{param1},#{param2},1)
+	</insert>
+	
+	<update id="doUpdateSellUseFlg">
+		update sellflg set use_flg=#{param1} where idx = #{param2}
+	</update>
+
+	
+	<update id="doUpdateMemFlg">
+		update member set mem_flg=#{param1} where idx = #{param2}
+	</update>
+
+
+	<select id="getMainImageList" resultType="com.guddi.shop.dto.EtcDto">
+		select idx,u_idx, newFileName, oriFileName, use_flg, regdate from mainimage
+		order by idx asc
+	</select>
+	
+	<select id="getUserInfo" resultType="com.guddi.shop.dto.MemberDto">
+		select idx, userId from member
+	</select>
+	
+	<select id="getMainImageIdx" resultType="int">
+		select count(*) from mainimage
+	</select>
+	
+	<insert id="doRegistMainImage" parameterType="com.guddi.shop.dto.EtcDto">
+		insert into mainimage (idx, u_idx, newFileName, oriFileName, use_flg) 
+		values (#{idx},#{u_idx},#{newFileName},#{oriFileName},1)
+	</insert>
+	
+	<select id="getU_idx" resultType="int">
+		select idx from member where userId = #{param1}
+	</select>
+	
+	<delete id="delMainImage">
+		delete from mainimage where idx = #{idx}
+	</delete>
+	
+	<update id="doUpdateImageUseFlg">
+		update mainImage set use_flg=#{param1} where idx = #{param2}
+	</update>
+	
+	<update id="updateImageOrder">
+		update mainimage set idx = #{param1} where newFileName = #{param2}
+	</update>
+	
+	<select id="productMainImageInfo" resultType="com.guddi.shop.dto.EtcDto">
+		select idx, oriFileName, newFileName from mainimage		
+		order by idx asc
+	</select>
+	
+	<update id="updateMainPhotoNum">
+		update mainimage set idx = #{param1} where idx = #{param2}
+	</update>
+	
+	<select id="getBrand" resultType="com.guddi.shop.dto.EtcDto">
+		SELECT brand_idx, use_flg, regdate, brand_name, brand_code FROM brand
+	</select>
+	
+	<select id="getBrandIdx" resultType="int">
+		SELECT brand_idx FROM brand order by brand_idx desc limit 1
+	</select>
+
+	<insert id="doRegistBrand">
+		INSERT INTO brand (brand_idx,use_flg,brand_name,brand_code)
+			VALUES (#{param1}, 1,#{param2}, #{param3})
+	</insert>
+	
+	<update id="doUpdateBrandUse">
+		UPDATE brand SET use_flg=#{param1} where brand_idx =#{param2}
+	</update>
+	
+	<select id="getType" resultType="com.guddi.shop.dto.EtcDto">
+		SELECT type_idx, use_flg, regdate, type_name, type_code FROM bagtype
+	</select>
+	
+	<select id="getTypeIdx" resultType="int">
+		SELECT type_idx FROM bagtype order by type_idx desc limit 1
+	</select>
+	
+	<insert id="doRegistType">
+		INSERT INTO bagtype (type_idx,use_flg,type_name, type_code)
+			VALUES (#{param1}, 1,#{param2},#{param3})
+	</insert>
+	
+	<update id="doUpdateTypeUse">
+		UPDATE bagtype SET use_flg=#{param1} where type_idx =#{param2}
+	</update>
+	
+	<select id="toUpdateQnaCategory" resultType="com.guddi.shop.dto.EtcDto">
+		select idx, typename, use_flg from qnatype
+	</select>
+	
+	<insert id="addQna">
+		insert into qnatype(idx, u_idx, typename, use_flg)
+			values(#{param3}, #{param1}, #{param2}, 1)
+	</insert>
+	
+	<update id="changUseFlg">
+		update qnatype set use_flg = #{param1}, u_idx = #{param3} where typename = #{param2}
+	</update>
+	
+
+</mapper>

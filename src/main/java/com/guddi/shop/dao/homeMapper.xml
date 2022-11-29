@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd"
+>
+
+<mapper namespace="com.guddi.shop.dao.HomeDao">
+
+<select id="photoList" resultType="com.guddi.shop.dto.EtcDto">	
+SELECT newFileName FROM mainimage  where use_flg = 1
+order by idx asc
+</select>
+
+<select id="rankList" resultType="com.guddi.shop.dto.ProductDto">	
+SELECT a.idx
+,b.b_idx
+,b.oriFileName
+,b.newFileName 
+FROM product a INNER JOIN product_photo b ON a.idx = b.b_idx
+where a.new_flg = 1 and b.photo_num = 1 and a.sell_flg = 1 order by a.regdate desc limit 8;
+</select>
+
+<select id="brandList" resultType="com.guddi.shop.dto.EtcDto">
+	select brand_idx, use_flg, brand_name from brand
+	where use_flg = 1
+	order by brand_idx asc
+
+</select>
+	
+</mapper>

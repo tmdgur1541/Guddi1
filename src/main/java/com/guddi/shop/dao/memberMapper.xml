@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd"
+>
+
+<mapper namespace="com.guddi.shop.dao.MemberDao">
+
+	<insert id="write" parameterType="com.guddi.shop.dto.MemberDto">
+		INSERT INTO member(userId,password,username,phone,email,zipcode,address,address_detail,birthday,gender,personInfo_flg,marketing_flg,mem_flg)
+			VALUES(#{userId},#{password},#{username},#{phone},#{email},#{zipcode},#{address},#{address_detail},#{birthday},#{gender},#{personInfo_flg},#{marketing_flg},#{mem_flg})
+	</insert>
+	
+	<select id="idCheck" resultType="String">
+		SELECT userId FROM member WHERE userId = #{param1}
+	</select>
+	
+	<update id="delete" >		
+		update member set mem_flg = 0 where userId = #{param1} 	
+	</update>
+	
+	<select id="findInfo" resultType="com.guddi.shop.dto.MemberDto">	
+		 select idx, userId, password, username, phone, email, zipcode, address, address_detail, regdate, mem_flg
+		 ,birthday,gender,personInfo_flg,marketing_flg
+		 from member where userId = #{param1}
+	</select>
+	
+	<select id="doPwCheck" resultType="String">	
+		select userId from member where userId = #{param1} and password	= #{param2}
+	</select>
+	
+	<update id="updateInfo" parameterType="com.guddi.shop.dto.MemberDto">		
+		update member set password=#{password}, username=#{username}, phone=#{phone} 
+		,email=#{email}, zipcode=#{zipcode}, address=#{address}, address_detail=#{address_detail}
+		,marketing_flg=#{marketing_flg}
+		where userId = #{userId}		
+	</update>
+	
+	<!-- 마이페이지 리뷰정보 갯수 + 검색 적용 -->
+	<select id="reviewSearchCount" parameterType="com.guddi.shop.dto.PageDto" resultType="int">
+		select count(*) 
+		from review r inner join product p
+		on r.b_idx = p.idx
+		where userId = #{userId}
+	<if test="searchType != null">
+		<if test='searchType.equals("product_name")'>
+	  	and product_name LIKE concat('%', #{keyword}, '%')
+	 	</if> 
+	 	<if test='searchType.equals("subject")'>
+	  	and subject LIKE concat('%', #{keyword}, '%')
+	 	</if>
+ 	</if> 		
+	</select>
+	<!-- getCart-->
+	<select id="getCart" resultType="int">
+		select COUNT(*) from cart where userId = #{param1}
+	</select>
+	<!-- 마이페이지 주문정보 총 갯수 + 검색 적용 -->
+	<select id="orderSearchCount" parameterType="com.guddi.shop.dto.PageDto" resultType="int">
+ 	select count(*) from tb_order 	
+	where userId = #{userId}
+	<if test='keyword != null'>
+  	and product_name LIKE concat('%', #{keyword}, '%')
+ 	</if>  	
+
+	</select>
+	
+	<!-- 마이페이지 주문정보 리스트-->
+	<select id="myPageOrderInfo" parameterType="com.guddi.shop.dto.PageDto" resultType="com.guddi.shop.dto.CartDto">
+ 	select product_name, regdate, order_num, price, quantity, totalPrice from tb_order
+	where userId=#{userId}
+	<if test='keyword != null'>
+  	and product_name LIKE concat('%', #{keyword}, '%')
+ 	</if> 	 	
+ 	order by regdate desc
+ 	limit #{displayPost}, #{postNum}
+	</select> 
+	
+	<!-- 마이페이지 리뷰정보 리스트-->
+	<select id="myPageReviewInfo" parameterType="com.guddi.shop.dto.PageDto" resultType="com.guddi.shop.dto.ReviewQnaDto">
+ 	select r.subject, r.regdate, p.product_name, r.idx, r.del_flg
+	from review r inner join product p
+	on r.b_idx = p.idx
+	where userId=#{userId}	 	
+	<if test="searchType != null">
+		<if test='searchType.equals("product_name")'>
+	  	and product_name LIKE concat('%', #{keyword}, '%')
+	 	</if> 
+	 	<if test='searchType.equals("subject")'>
+	  	and subject LIKE concat('%', #{keyword}, '%')
+	 	</if>
+ 	</if> 			
+ 	order by r.idx desc
+ 	limit #{displayPost}, #{postNum}
+	</select> 
+	
+	<select id="getReviewDetail"  resultType="com.guddi.shop.dto.ReviewQnaDto">
+ 	select r.subject, r.regdate, p.product_name, r.idx, r.content
+	from review r inner join product p
+	on r.b_idx = p.idx
+	where r.idx = #{idx}	 	
+	</select> 
+	
+	<select id="getReviewAnswerDetail"  resultType="com.guddi.shop.dto.ReviewQnaDto">
+ 	select ra.content, ra.regdate
+	from review r inner join review_answer ra
+	on r.idx = ra.r_idx
+	where r.idx = #{idx}	 	
+	</select> 
+	
+	<update id="delReview">
+		update review set del_flg = 1 where idx = #{param1}
+	</update>
+	
+	<!--  Qna 총 갯수 + 검색 적용 -->
+	<select id="qnaSearchCount" parameterType="com.guddi.shop.dto.PageDto" resultType="int">
+ 	select count(*) from qna
+ 	where 1=1
+	<if test='answer_flg!=2'>
+  	and answer_flg = #{answer_flg}
+ 	</if>	
+ 	<if test='keyword != null'>
+  	and userId LIKE concat('%', #{keyword}, '%')
+ 	</if>  	
+	</select>
+	
+	<!-- Q&A 리스트-->
+	<select id="qnaInfo" parameterType="com.guddi.shop.dto.PageDto" resultType="com.guddi.shop.dto.ReviewQnaDto">
+ 	select idx,answer_type ,subject, userId, regdate, del_flg ,answer_flg
+	from qna
+	where del_flg = 0
+	<if test='answer_flg!=2'>
+  	and answer_flg = #{answer_flg}
+ 	</if>	
+ 	<if test='qnaType!=0'>
+  	and answer_type = #{qnaType}
+ 	</if>	
+ 	<if test='keyword != null'>
+  	and userId LIKE concat('%', #{keyword}, '%')
+ 	</if>  		 	
+ 	order by idx desc
+ 	limit #{displayPost}, #{postNum}
+	</select> 
+	
+	<insert id="doRegistQna" parameterType="com.guddi.shop.dto.ReviewQnaDto">
+		INSERT INTO qna (answer_type,subject,content,userId,regdate,u_idx,del_flg,answer_flg)
+			VALUES(#{answer_type},#{subject},#{content},#{userId},now(),#{u_idx},0,0)
+	</insert>
+	
+	<select id="getQnaDetail"  resultType="com.guddi.shop.dto.ReviewQnaDto">
+ 	select subject, regdate, idx, content, userId, answer_type
+	from qna	
+	where idx = #{idx}	 	
+	</select> 
+	
+	<select id="getQnaAnswerDetail" resultType="com.guddi.shop.dto.ReviewQnaDto">
+ 	select idx ,content, userId, regdate
+	from qna_answer
+	where q_idx = #{idx}
+	and del_flg=0	 	
+	</select> 
+	
+	<select id="getQnaType" resultType="com.guddi.shop.dto.ReviewQnaDto">
+ 	select idx, typename from qnatype  	
+	</select> 
+	
+	<update id="deleteQna" >
+		update qna set del_flg = 1 where idx = #{param1}	
+	</update>
+	
+	<select id="getAnswerType" resultType="com.guddi.shop.dto.ReviewQnaDto">
+ 	select idx, answername
+	from answertype
+	order by idx desc  	
+	</select> 		
+	
+	<select id="checkAnswer" resultType="int">
+		select COUNT(*) from qna_answer where q_idx = #{idx}
+	</select>
+	
+	<update id="doUpdateQna" parameterType="com.guddi.shop.dto.ReviewQnaDto">
+		update qna set subject = #{subject}, content = #{content}	 where idx = #{idx}	
+	</update>
+	
+	
+	<insert id="toCart" parameterType="com.guddi.shop.dto.CartDto">
+		INSERT INTO tb_cart (userId ,subject ,quantity ,price ,unit ,product_num )
+			VALUES(#{userId},#{subject},#{quantity},#{price},#{unit},#{product_num})
+	</insert>
+
+
+
+	
+	
+
+	<!--getCartInfo 카트 리스트 불러오기 -->
+	<select id="getCartInfo" resultType="com.guddi.shop.dto.CartDto">
+		select distinct c.idx,c.userId ,c.u_idx,c.product_name,c.product_code,c.quantity,c.price,pp.photo_num
+		from product_photo pp
+		inner join cart c  on c.u_idx = pp.u_idx where userId = #{userId} and photo_num=1;
+	</select>
+	<!-- delCart-->
+	<delete id="delCart" parameterType="com.guddi.shop.dto.CartDto">
+		delete from cart where userId = #{userId} and idx = #{idx}
+	</delete>
+	
+	<select id="toLogin" parameterType="com.guddi.shop.dto.MemberDto" resultType="com.guddi.shop.dto.MemberDto">	
+		 SELECT idx, userId, password, username, phone, email, zipcode, address, address_detail, regdate, mem_flg
+		 from member 
+		 where userId = #{userId} 
+		 and password = #{password}
+		
+	</select>
+
+	<!-- 카트 갯수  -->
+	<select id="HeadergetCart" resultType="int">
+		select COUNT(*) from cart where userId=#{param1} 
+	</select>
+		
+	<update id="cartupdate" parameterType="com.guddi.shop.dto.CartDto">
+		UPDATE cart SET 
+			quantity=#{quantity}
+		WHERE product_code = #{product_code} and userId=#{userId}
+	</update>
+	
+
+	
+	
+
+	<select id="getTotalPrice" resultType="com.guddi.shop.dto.CartDto">
+		select price, quantity from tb_order where userId = #{param1}
+	</select>
+
+	<!-- findIdPassword 아이디/패스워드 찾기 xml START!!!-->
+	<select id="doFindMemberId" resultType="com.guddi.shop.dto.MemberDto">
+		select userId from member where username=#{param1} and email = #{param2}
+	</select>
+	<select id="temppasslogin" resultType="String">
+		SELECT userId FROM member 
+			WHERE userId=#{param1} AND email=#{param2}
+	</select>
+	<update id="temppassloginPw">
+		UPDATE member SET 
+			password=#{param2}
+		WHERE userId =#{param1}
+	</update>
+	<select id="tempPass" resultType="String">
+		SELECT password FROM member 
+			WHERE userId=#{param1} 
+	</select>
+	<!-- findIdPassword 아이디/패스워드 찾기 xml END!!!-->
+	 
+</mapper>

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd"
+>
+
+
+<mapper namespace="com.guddi.shop.dao.CartDao">
+
+	<!--getCartInfo 카트 리스트 불러오기 -->
+	<select id="getCartInfo" resultType="com.guddi.shop.dto.CartDto">
+		select pp.newFileName,c.product_code, c.product_name, p.price, c.quantity, c.price, m.idx , m.userId , m.username , m.phone , m.email , m.zipcode , m.address , m.address_detail 
+		, m.birthday , m.personInfo_flg , m.marketing_flg , m.mem_flg , m.delete_date , m.regdate , m.gender, pp.photo_num 
+		from product p inner join cart c
+		on p.product_code = c.product_code 
+		inner join product_photo pp
+		on pp.b_idx = p.idx
+		inner join member m
+		on m.userId = c.userId 
+		where c.userId = #{userId} and pp.photo_num = 1
+	</select>
+	<!--getCartInfo 카트 리스트 불러오기 -->
+	<select id="getCartInfoImg" resultType="com.guddi.shop.dto.CartDto">
+		
+		SELECT a.idx
+		,b.b_idx
+		,b.oriFileName
+		,b.newFileName 
+		FROM product a INNER JOIN product_photo b ON a.idx = b.b_idx
+		where a.new_flg = 1 and b.photo_num = 1 and a.sell_flg = 1 and product_name = #{product_name}
+	
+	</select>
+		
+	<!-- delCart-->
+	<delete id="delCart" parameterType="com.guddi.shop.dto.CartDto">
+		delete from cart where userId = #{userId} and product_code = #{product_code}
+	</delete>
+	<select id="getCart" resultType="int">
+		select COUNT(*) from cart where userId = #{userId}
+	</select>
+	
+	<update id="cartupdate" parameterType="com.guddi.shop.dto.CartDto">
+		UPDATE cart SET 
+			quantity=#{quantity}
+		WHERE product_code = #{product_code} and userId=#{userId}
+	</update>
+	
+	<!-- 체크박스 delete -->
+	<delete id ="chkdelete"> 
+		DELETE FROM cart WHERE product_code = #{product_code} 
+	</delete>
+		
+	<!-- order checkout -->
+	<select id="checkout" parameterType="hashMap">
+	select distinct c.idx,c.userId ,c.u_idx,c.product_name,c.product_code,c.quantity,c.price,pp.photo_num,pp.newFileName 
+		from cart c inner join product_photo pp
+		on c.u_idx = pp.u_idx
+		where userId = #{userId} and product_name = #{product_name}
+	</select>
+	
+	<select id="findInfo" resultType="com.guddi.shop.dto.CartDto">	
+		 select userId, username, phone, email, zipcode, address, address_detail, regdate, mem_flg
+		 from member where userId = #{param1}
+	</select>
+	
+	<select id="toOrder" resultType="com.guddi.shop.dto.CartDto">	
+		select pp.newFileName, c.product_name, p.price, c.quantity, c.price, m.idx, p.product_code
+		, m.userId , m.username , m.phone , m.email , m.zipcode , m.address , m.address_detail  
+		from product p inner join cart c
+		on p.product_code = c.product_code 
+		inner join product_photo pp
+		on pp.b_idx = p.idx
+		inner join member m
+		on m.userId = c.userId 
+		where c.userId = #{param1} and pp.photo_num = 1
+		<if test="param2 != null">
+			and p.product_code in (
+			<foreach collection="param2" item="arr" separator=",">
+				  #{arr}
+			</foreach>
+			)
+		</if>
+	</select>
+	
+	<select id="getOrderIdx" resultType="String">
+		select count(*) from tb_order
+	</select>
+	
+	<insert id="doOrder" parameterType="com.guddi.shop.dto.CartDto">
+		insert into tb_order (userId, username, phone, email,zipcode, address, address_detail, product_name, product_code, price, quantity, order_num, totalPrice) 
+		values (#{userId},#{username},#{phone},#{email},#{zipcode},#{address},#{address_detail},#{product_name},#{product_code},#{price},#{quantity},#{order_num},#{totalPrice})
+	</insert>
+	
+	<!-- delCart-->
+	<delete id="delCartByProductCode">
+		delete from cart where userId = #{param1} and product_code = #{param2}
+	</delete>
+	
+	<select id="HeadergetCart" resultType="int">
+		select COUNT(*) from cart where userId=#{param1} 
+	</select>
+	
+</mapper>

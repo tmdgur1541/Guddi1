@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd"
+>
+
+<mapper namespace="com.guddi.shop.dao.ProductDao">
+
+	<select id="searchCount" parameterType="com.guddi.shop.dto.PageDto" resultType="int">
+ 	select count(idx) from product   	
+	where 1=1
+	<if test='brand_type!=0'>
+  	and brand_idx = #{brand_type}
+ 	</if>	
+ 	<if test='bag_name!=null'>
+  	and bag_type LIKE concat('%', #{bag_name}, '%')
+ 	</if> 
+ 	<if test='keyword!=null'>
+ 	 and product_name LIKE concat('%', #{keyword}, '%')
+ 	</if> 
+ 	
+	</select>
+	
+	<!-- 목록 + 페이징 + 검색 -->
+	<select id="listPageSearch" parameterType="com.guddi.shop.dto.PageDto" resultType="com.guddi.shop.dto.ProductDto">
+ 	 select tp.idx idx, tp.brand_idx brand_idx, tp.brand_name brand_name, tp.product_name product_name, 
+			tp.price price	,tpp.newFileName newFileName, tpp.photo_num photo_num
+	from product tp inner join product_photo tpp
+	ON tp.idx = tpp.b_idx	
+	where photo_num = 1
+	<if test='brand_type!=0'>
+  	and brand_idx = #{brand_type}
+ 	</if>	
+ 	<if test='bag_name!=null'>
+  	and bag_type LIKE concat('%', #{bag_name}, '%')
+ 	</if> 
+ 	<if test='keyword!=null'>
+ 	 and product_name LIKE concat('%', #{keyword}, '%')
+ 	</if> 
+ 	order by tp.idx desc
+ 	limit #{displayPost}, #{postNum}
+	</select> 
+	
+	<select id="detail" resultType="com.guddi.shop.dto.ProductDto">
+		SELECT brand_name,product_name,product_code,price,product_content
+		 FROM product WHERE idx = #{idx}
+	</select>
+	
+	<select id="productimage" resultType="com.guddi.shop.dto.ProductDto">
+		SELECT oriFileName,newFileName, photo_num FROM product_photo
+			WHERE b_idx = #{idx}
+			order by photo_num asc
+	</select>
+	
+	<insert id="doCartUpdate" parameterType="com.guddi.shop.dto.CartDto">
+		INSERT INTO cart(product_name,u_idx,userId,product_code,price,quantity)
+		VALUES (#{product_name},(select idx from member where userId = #{userId}),
+		#{userId},#{product_code},#{price},#{quantity})
+	</insert>
+	
+	<select id="searchReviewCount" resultType="int">
+		
+		SELECT count(*) FROM
+		review WHERE b_idx = #{idx} AND del_flg = 0
+		
+	</select>
+	
+	<select id="reviewlist" parameterType="com.guddi.shop.dto.PageDto"   resultType="com.guddi.shop.dto.ReviewQnaDto">
+		
+		SELECT idx,userId,regdate,subject,content FROM
+		review WHERE b_idx = #{idx} AND del_flg =0 ORDER by regdate asc 
+		limit #{displayPost}, #{postNum}
+		
+	</select>
+	
+	<select id="reviewupdatedetail" resultType="com.guddi.shop.dto.ProductDto">
+		SELECT b_idx FROM product WHERE product_name = #{product_name}
+	</select>
+	
+	<insert id="reviewupdate" parameterType="com.guddi.shop.dto.ReviewQnaDto">
+		INSERT INTO review(b_idx,u_idx,subject,content,userId,regdate,del_flg,answer_flg)
+		VALUES((select idx from product where product_code = #{product_code}),
+		(select idx from member where userId = #{userId}),
+		#{subject},
+		#{content},
+		#{userId},
+		NOW(),
+		0,
+		0
+		)
+	</insert>
+
+	
+	<select id="checkOrder" resultType="int">
+		select count(*) from tb_order
+		where product_code = #{param1}
+		and userId = #{param2}
+	</select>
+	
+	<select id="answerLsit" resultType="com.guddi.shop.dto.ReviewQnaDto">
+	select r.b_idx, a.content, a.r_idx
+	from review_answer a inner join review r 
+	on r.idx = a.r_idx
+	where r.b_idx = #{idx}
+	and a.del_flg = 0	
+	</select>
+
+	<!-- 리뷰삭제 -->
+	<update id="reviewdelete">
+		UPDATE review SET
+			del_flg = 1
+		WHERE idx = #{idx};
+	</update>
+
+	<select id="getCart" resultType="int">
+		select COUNT(*) from cart where userId = #{userId}
+	</select>
+
+
+</mapper>
+
+
+
